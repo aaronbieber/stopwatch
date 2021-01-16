@@ -1,5 +1,7 @@
 # Stopwatch
 
+![Stopwatch screenshot](images/screenshot.png)
+
 This is a very simple stopwatch app for Windows 10. If this works in any other 
 version of Windows it is entirely by chance, and it's the only Windows 
 Presentation Framework app I've ever written so don't expect too much.
