@@ -26,6 +26,7 @@ namespace Stopwatch
     public partial class MainWindow : Window
     {
         private RealStopWatch sw;
+        private TimeSpan offset;
         private DispatcherTimer timer;
         private IntPtr _windowHandle;
         private HwndSource _source;
@@ -48,6 +49,7 @@ namespace Stopwatch
             InitializeComponent();
 
             sw = new RealStopWatch();
+            offset = new TimeSpan(0, 0, 0);
             timer = new DispatcherTimer();
             timer.Tick += new EventHandler(dispatcherTimer_Tick);
             timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
@@ -89,6 +91,7 @@ namespace Stopwatch
         private void reset()
         {
             sw.Reset();
+            offset = new TimeSpan(0);
         }
 
         private void OnKeyDownHandler(object sender, KeyEventArgs e)
@@ -114,6 +117,32 @@ namespace Stopwatch
                     redrawTime();
                 }
             }
+            else if (e.Key == Key.Up)
+            {
+                if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0)
+                {
+                    offset = offset.Add(new TimeSpan(0, 10, 0));
+                } else
+                {
+                    offset = offset.Add(new TimeSpan(0, 1, 0));
+                }
+                redrawTime();
+            }
+            else if (e.Key == Key.Down)
+            {
+                if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0)
+                {
+                    offset = offset.Subtract(new TimeSpan(0, 10, 0));
+                } else
+                {
+                    offset = offset.Subtract(new TimeSpan(0, 1, 0));
+                }
+                if (offset.TotalMilliseconds < 0)
+                {
+                    offset = new TimeSpan(0);
+                }
+                redrawTime();
+            }
         }
 
         private void dispatcherTimer_Tick(object sender, EventArgs e)
@@ -123,7 +152,7 @@ namespace Stopwatch
 
         private void redrawTime()
         {
-            TimeSpan ts = sw.Elapsed;
+            TimeSpan ts = sw.Elapsed.Add(offset);
             lblTime.Content = String.Format("{0:00}:{1:00}:{2:00}",
                 ts.Hours, ts.Minutes, ts.Seconds);
         }
